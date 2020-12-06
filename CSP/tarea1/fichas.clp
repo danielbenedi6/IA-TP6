@@ -2,11 +2,11 @@
 ;		MODULO MAIN			
 ;===========================
 (defmodule MAIN
-	(export deftemplate nodo)
+	(export deftemplate nodo casilla)
 	(export deffunction heuristica)
 )
 
-(deftemplate nodo
+(deftemplate MAIN::nodo
 	(multislot estado)
 	(multislot camino)
 	(slot heuristica)
@@ -98,7 +98,7 @@
 	(assert (nodo	(estado $?nuevo-estado)
 					(camino $?movimientos I2)
 					(heuristica (heuristica $?nuevo-estado))
-					(coste (+ ?coste 2))
+					(coste (+ ?coste 1))
 			)
 	)
 )
@@ -114,7 +114,7 @@
 	(assert (nodo	(estado $?nuevo-estado)
 					(camino $?movimientos I3)
 					(heuristica (heuristica $?nuevo-estado))
-					(coste (+ ?coste 3))
+					(coste (+ ?coste 1))
 			)
 	)
 )
@@ -146,7 +146,7 @@
 	(assert (nodo	(estado $?nuevo-estado)
 					(camino $?movimientos D2)
 					(heuristica (heuristica $?nuevo-estado))
-					(coste (+ ?coste 2))
+					(coste (+ ?coste 1))
 			)
 	)
 )
@@ -162,7 +162,7 @@
 	(assert (nodo	(estado $?nuevo-estado)
 					(camino $?movimientos D3)
 					(heuristica (heuristica $?nuevo-estado))
-					(coste (+ ?coste 3))
+					(coste (+ ?coste 1))
 			)
 	)
 )
@@ -176,14 +176,13 @@
 
 (defrule RESTRICCIONES::repeticiones-de-nodo
 	(declare (auto-focus TRUE))
-	?nodo1 <-	(nodo (estado ?estado)
-					(camino $?camino1)
+	?nodo1 <-	(nodo	(estado $?estado)
+						(coste ?c1)
+						(heuristica ?h1)
 				)
-	(nodo	(estado ?estado)
-			(camino $?camino2&:	(>	(length$ ?camino1)
-									(length$ ?camino2)
-								)
-			)
+	(nodo	(estado $?estado)
+			(heuristica ?h2)
+			(coste ?c2&:(< (+ ?c2 ?h2) (+ ?c1 ?h1)))
 	)
 	=>
    (retract ?nodo1)
@@ -195,12 +194,12 @@
 ;===============================
 
 (defmodule SOLUCION
-   (import MAIN deftemplate nodo)
+	(import MAIN deftemplate nodo)
 )
 
 (defrule SOLUCION::reconoce-solucion
    (declare (auto-focus TRUE))
-   ?nodo <- (nodo (heuristica 0)
+   ?nodo <- (nodo (estado V V V H B B B)
                (camino $?movimientos))
 	=> 
    (retract ?nodo)
