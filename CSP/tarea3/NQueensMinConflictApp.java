@@ -27,7 +27,7 @@ public class NQueensMinConflictApp {
 				solucion = new NQueens(8, acciones);
 				//solucion.asigna_correccion();
 			}
-		}while(acciones != null || !solucion.correcto());
+		}while(acciones != null && !solucion.correcto());
 		
 		double end= System.currentTimeMillis();
 		System.out.println(acciones);
